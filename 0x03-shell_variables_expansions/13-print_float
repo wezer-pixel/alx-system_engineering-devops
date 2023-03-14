@@ -1,2 +1,2 @@
 #!/bin/bash
-echo "NUM=1.22"
+echo NUM="1.22"
