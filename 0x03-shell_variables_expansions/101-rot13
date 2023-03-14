@@ -1,2 +1,2 @@
 #!/bin/bash
-echo 'fooman@example.com' | rot10
+tr 'A-Zaz' 'N-ZA-Mn-za-m'
