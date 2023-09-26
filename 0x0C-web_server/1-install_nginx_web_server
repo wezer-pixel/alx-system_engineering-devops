@@ -1,8 +1,20 @@
-#!/usr/bin/env bash
-# Install nginx on web-01 server. Listening on port 80 
+#!/bin/bash
 
-apt-get -y update
-apt-get -y install nginx
-ufw allow 'Nginx HTTP'
-echo 'Hello World!' > /var/www/html/index.htm
+# Update package lists for upgrades and installations
+apt-get update
+
+# Install Nginx
+apt-get install -y nginx
+
+# Start Nginx (not using systemctl)
 service nginx start
+
+# Create a simple HTML page with "Hello World!"
+echo "<html><body><h1>Hello World!</h1></body></html>" > /var/www/html/index.html
+
+# Ensure Nginx is listening on port 80
+sed -i 's/listen 80 default_server;/listen 80;/g' /etc/nginx/sites-available/default
+
+# Reload Nginx (not using systemctl)
+service nginx reload
+
