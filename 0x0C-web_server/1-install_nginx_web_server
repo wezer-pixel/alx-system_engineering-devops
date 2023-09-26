@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Update package lists for upgrades and installations
 apt-get update
@@ -10,7 +10,7 @@ apt-get install -y nginx
 service nginx start
 
 # Create a simple HTML page with "Hello World!"
-echo "<html><body><h1>Hello World!</h1></body></html>" > /var/www/html/index.html
+echo "Hello World!" > /var/www/html/index.html
 
 # Ensure Nginx is listening on port 80
 sed -i 's/listen 80 default_server;/listen 80;/g' /etc/nginx/sites-available/default
