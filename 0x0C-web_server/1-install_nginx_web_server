@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!usr/bin/env bash
 
 # Update package lists for upgrades and installations
 apt-get update
