@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# Remove the symbolic link for the default configuration
+rm /etc/nginx/sites-enabled/default
+
+# Create a new symbolic link to the default configuration
+ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
+# Restart Nginx to apply the changes
+sudo service nginx restart
+
