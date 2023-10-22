@@ -1,42 +1,19 @@
 #!/usr/bin/env bash
+# Usage: ./1-world_wide_web <domain> <subdomain>
+# Display information about subdomains.
 
-# Function to display subdomain information
-function display_info {
-    local domain="$1"
-    local subdomain="$2"
-
-    local subdomains=("www" "lb-01" "web-01" "web-02")
-
-    if [ -z "$subdomain" ]; then
-        subdomains_to_check=("${subdomains[@]}")
-    else
-        if [[ " ${subdomains[*]} " != *" $subdomain "* ]]; then
-            echo "The subdomain $subdomain does not exist."
-            exit 1
-        fi
-        subdomains_to_check=("$subdomain")
-    fi
-
-    for sub in "${subdomains_to_check[@]}"; do
-        result=$(dig +short "$sub.$domain")
-
-        if [ -n "$result" ]; then
-            record_type=$(dig "$sub.$domain" | awk '/ANSWER SECTION/ { getline; print $4 }')
-            echo "The subdomain $sub is a $record_type record and points to $result"
-        else
-            echo "The subdomain $sub does not exist."
-        fi
-    done
+domain_information () {
+    line=$(dig "$2"."$1" | grep -A1 'ANSWER SECTION:' | tr '\t' '\n' | tail -2 | tr '\n' ' ')
+    echo "$2 $line" | awk '{print "The subdomain " $1 " is a " $2 " record and points to " $3}'
 }
 
-if [ $# -lt 1 ]; then
-    echo "*** Provide domain name ***"
-    exit 1
-elif [ $# -eq 1 ]; then
-    display_info "$1"
-elif [ $# -eq 2 ]; then
-    display_info "$1" "$2"
-else
-    echo "*** Invalid number of arguments ***"
-    exit 1
+if [ "$#" == 1 ]
+then
+  domain_information "$1" "www"
+  domain_information "$1" "lb-01"
+  domain_information "$1" "web-01"
+  domain_information "$1" "web-02"
+elif [ "$#" == 2 ]
+then
+  domain_information "$1" "$2"
 fi
