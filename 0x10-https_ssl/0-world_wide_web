@@ -1,21 +1,27 @@
 #!/usr/bin/env bash
+
 # Function to display subdomain information
-display_info() {
+function display_info {
     local domain="$1"
     local subdomain="$2"
 
-    # If a subdomain is specified, use it; otherwise, use default subdomains
+    local subdomains=("www" "lb-01" "web-01" "web-02")
+
     if [ -z "$subdomain" ]; then
-        subdomains=("www" "lb-01" "web-01" "web-02")
+        subdomains_to_check=("${subdomains[@]}")
     else
-        subdomains=("$subdomain")
+        if [[ " ${subdomains[*]} " != *" $subdomain "* ]]; then
+            echo "The subdomain $subdomain does not exist."
+            exit 1
+        fi
+        subdomains_to_check=("$subdomain")
     fi
 
-    # Iterate over subdomains and display information
-    for sub in "${subdomains[@]}"; do
+    for sub in "${subdomains_to_check[@]}"; do
         result=$(dig +short "$sub.$domain")
+
         if [ -n "$result" ]; then
-            record_type=$(dig "$sub.$domain" | grep -A1 'ANSWER SECTION:' | awk '{print $4}')
+            record_type=$(dig "$sub.$domain" | awk '/ANSWER SECTION/ { getline; print $4 }')
             echo "The subdomain $sub is a $record_type record and points to $result"
         else
             echo "The subdomain $sub does not exist."
@@ -23,17 +29,14 @@ display_info() {
     done
 }
 
-# Check if at least one argument is provided
 if [ $# -lt 1 ]; then
-    echo "Usage: $0 <domain> [subdomain]"
+    echo "*** Provide domain name ***"
     exit 1
-fi
-
-# Parse command-line arguments
-domain="$1"
-subdomain="$2"
-
-# Call the display_info function
-display_info "$domain" "$subdomain"
-
+elif [ $# -eq 1 ]; then
+    display_info "$1"
+elif [ $# -eq 2 ]; then
+    display_info "$1" "$2"
+else
+    echo "*** Invalid number of arguments ***"
+    exit 1
 fi
